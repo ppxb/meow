@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "oxlint src/",
-    "lint:fix": "oxlint src/ --fix",
-    "fmt": "oxfmt /src",
-    "fmt:check": "oxfmt /src --check",
+    "lint": "oxlint src",
+    "lint:fix": "oxlint src --fix",
+    "fmt": "oxfmt src",
+    "fmt:check": "oxfmt src --check",
     "preview": "vite preview",
     "tauri": "tauri"
   },
