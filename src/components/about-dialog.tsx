@@ -1,3 +1,4 @@
+import { TauriIcon } from '@/icons'
 import packageJson from '../../package.json'
 
 import {
@@ -7,38 +8,69 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
+import { Badge } from './ui/badge'
+import { BadgeCheck } from 'lucide-react'
 
 type AboutDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
+const stacks = [
+  {
+    name: 'React',
+    icon: BadgeCheck
+  },
+  {
+    name: 'Tauri',
+    icon: TauriIcon
+  }
+]
+
 export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">关于 Meow</DialogTitle>
+          <DialogTitle className="text-xl font-bold">关于</DialogTitle>
           <DialogDescription className="text-xs">
-            这是当前桌面下载工具的基础壳层，已经接入左侧导航、页面路由和独立的关于弹层。
+            全功能下载管理器，使用 React 和 Rust 构建。
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4">
-            <p className="text-xs font-semibold tracking-[0.16em] text-slate-500 uppercase">版本</p>
-            <p className="mt-2 text-sm font-medium text-slate-900">v{packageJson.version}</p>
+            <p className="text-sm font-semibold">Meow 版本</p>
+            <p className="mt-2 text-sm font-medium">v{packageJson.version}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4">
-            <p className="text-xs font-semibold tracking-[0.16em] text-slate-500 uppercase">
-              技术栈
-            </p>
-            <p className="mt-2 text-sm font-medium text-slate-900">Tauri + React Router</p>
+            <p className="text-sm font-semibold">Aria2 版本</p>
+            <p className="mt-2 text-sm font-medium">v1.36.0</p>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div>技术栈</div>
+          <div className="flex gap-2">
+            {stacks.map(item => (
+              <Badge variant="secondary" key={item.name}>
+                <item.icon />
+                {item.name}
+              </Badge>
+            ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-600">
-          当前建议把“关于”视为全局动作，而不是主内容页面。这样它可以独立展示版本、更新记录和项目说明，不会干扰主路由结构。
+        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+          <span>© 2026 ppxb.</span>
+          <span>Inspired by</span>
+          <a
+            href="https://github.com/AnInsomniacy/motrix-next"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-yellow-500 underline"
+          >
+            Motrix Next
+          </a>
         </div>
       </DialogContent>
     </Dialog>
