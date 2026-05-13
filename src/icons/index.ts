@@ -1,2 +1,5 @@
 export { ReactIcon } from './react'
 export { TauriIcon } from './tauri'
+export { TailwindcssIcon } from './tailwindcss'
+export { ViteIcon } from './vite'
+export { GithubIcon } from './github'
