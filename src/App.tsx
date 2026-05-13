@@ -8,13 +8,12 @@ function App() {
   const [name, setName] = useState('')
 
   async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke('greet', { name }))
   }
 
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+      <h1 className="text-2xl text-amber-300">Welcome to Tauri + React</h1>
 
       <div className="row">
         <a href="https://vite.dev" target="_blank">
