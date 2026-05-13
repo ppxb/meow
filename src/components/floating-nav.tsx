@@ -16,7 +16,11 @@ type FloatingNavProps = {
 }
 
 export function FloatingNav({ items, activeId, className, onItemSelect }: FloatingNavProps) {
-  const currentId = activeId ?? items[0].id
+  const currentId = activeId ?? items[0]?.id
+
+  if (items.length === 0) {
+    return null
+  }
 
   return (
     <div
