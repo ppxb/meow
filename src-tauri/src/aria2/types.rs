@@ -274,6 +274,7 @@ mod tests {
         });
         let resp: JsonRpcResponse<String> = serde_json::from_value(json).expect("deserialize");
         assert_eq!(resp.result.as_deref(), Some("OK"));
+        assert_eq!(resp.id.as_deref(), Some("meow"));
         assert!(resp.error.is_none());
     }
 
