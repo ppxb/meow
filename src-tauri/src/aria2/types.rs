@@ -84,7 +84,7 @@ pub struct Aria2Task {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Aria2GlobalStats {
+pub struct Aria2GlobalStat {
     pub download_speed: String,
     pub upload_speed: String,
     pub num_active: String,
@@ -225,7 +225,7 @@ mod tests {
             "numStopped": "10",
             "numStoppedTotal": "100"
         });
-        let stat: Aria2GlobalStats = serde_json::from_value(json).expect("deserialize");
+        let stat: Aria2GlobalStat = serde_json::from_value(json).expect("deserialize");
         assert_eq!(stat.download_speed, "1048576");
         assert_eq!(stat.num_active, "3");
         assert_eq!(stat.num_stopped_total, "100");
@@ -248,5 +248,46 @@ mod tests {
         assert_eq!(file.path, "/tmp/file.zip");
         assert_eq!(file.uris.len(), 1);
         assert_eq!(file.uris[0].status, "used");
+    }
+
+    #[test]
+    fn serialize_jsonrpc_request() {
+        let req = JsonRpcRequest {
+            jsonrpc: "2.0",
+            id: "meow".to_string(),
+            method: "aria2.getGlobalStat".to_string(),
+            params: vec![serde_json::Value::String("token:secret123".to_string())],
+        };
+        let json = serde_json::to_value(&req).expect("serialize");
+        assert_eq!(json["jsonrpc"], "2.0");
+        assert_eq!(json["id"], "meow");
+        assert_eq!(json["method"], "aria2.getGlobalStat");
+        assert_eq!(json["params"][0], "token:secret123");
+    }
+
+    #[test]
+    fn deserialize_jsonrpc_response() {
+        let json = serde_json::json!({
+            "id": "meow",
+            "jsonrpc": "2.0",
+            "result": "OK"
+        });
+        let resp: JsonRpcResponse<String> = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(resp.result.as_deref(), Some("OK"));
+        assert!(resp.error.is_none());
+    }
+
+    #[test]
+    fn deserialize_jsonrpc_response_with_error() {
+        let json = serde_json::json!({
+            "id": "meow",
+            "jsonrpc": "2.0",
+            "error": { "code": -32600, "message": "Invalid Request" }
+        });
+        let resp: JsonRpcResponse<String> = serde_json::from_value(json).expect("deserialize");
+        assert!(resp.result.is_none());
+        let err = resp.error.unwrap();
+        assert_eq!(err.code, -32600);
+        assert_eq!(err.message, "Invalid Request");
     }
 }
