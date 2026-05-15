@@ -23,16 +23,12 @@ pub struct Aria2File {
 pub struct Aria2TorrentInfo {
     #[serde(default)]
     pub info: Option<Aria2TorrentName>,
-
     #[serde(default)]
     pub announce_list: Option<Vec<Vec<String>>>,
-
     #[serde(default)]
     pub creation_date: Option<String>,
-
     #[serde(default)]
     pub comment: Option<String>,
-
     #[serde(default)]
     pub mode: Option<String>,
 }
@@ -40,4 +36,80 @@ pub struct Aria2TorrentInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Aria2TorrentName {
     pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Aria2Task {
+    pub gid: String,
+    pub status: String,
+    pub total_length: String,
+    pub completed_length: String,
+    pub upload_length: String,
+    pub download_speed: String,
+    pub upload_speed: String,
+    pub connections: String,
+    pub dir: String,
+    #[serde(default)]
+    pub files: Vec<Aria2File>,
+    #[serde(default)]
+    pub bittorrent: Option<Aria2TorrentInfo>,
+    #[serde(default)]
+    pub info_hash: Option<String>,
+    #[serde(default)]
+    pub num_seeders: Option<String>,
+    #[serde(default)]
+    pub seeder: Option<String>,
+    #[serde(default)]
+    pub bitfield: Option<String>,
+    #[serde(default)]
+    pub num_pieces: Option<String>,
+    #[serde(default)]
+    pub piece_length: Option<String>,
+    #[serde(default)]
+    pub error_code: Option<String>,
+    #[serde(default)]
+    pub error_message: Option<String>,
+    #[serde(default)]
+    pub verified_length: Option<String>,
+    #[serde(default)]
+    pub verify_integrity_pending: Option<String>,
+    #[serde(default)]
+    pub followed_by: Option<Vec<String>>,
+    #[serde(default)]
+    pub following: Option<String>,
+    #[serde(default)]
+    pub belongs_to: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Aria2GlobalStats {
+    pub download_speed: String,
+    pub upload_speed: String,
+    pub num_active: String,
+    pub num_waiting: String,
+    pub num_stopped: String,
+    pub num_stopped_total: String,
+}
+
+#[derive(Debug, Serialize)]
+pub(crate) struct JsonRpcRequest {
+    pub jsonrpc: &'static str,
+    pub id: String,
+    pub method: String,
+    pub params: Vec<serde_json::Value>,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct JsonRpcResponse<T> {
+    pub id: Option<String>,
+    pub result: Option<T>,
+    pub error: Option<JsonRpcError>,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct JsonRpcError {
+    pub code: i64,
+    pub message: String,
 }
