@@ -214,4 +214,39 @@ mod tests {
         assert_eq!(task.following.as_deref(), Some("parent001"));
         assert_eq!(task.belongs_to.as_deref(), Some("parent001"));
     }
+
+    #[test]
+    fn deserialize_global_stats() {
+        let json = serde_json::json!({
+            "downloadSpeed": "1048576",
+            "uploadSpeed": "524288",
+            "numActive": "3",
+            "numWaiting": "1",
+            "numStopped": "10",
+            "numStoppedTotal": "100"
+        });
+        let stat: Aria2GlobalStats = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(stat.download_speed, "1048576");
+        assert_eq!(stat.num_active, "3");
+        assert_eq!(stat.num_stopped_total, "100");
+    }
+
+    #[test]
+    fn deserialize_file_with_uris() {
+        let json = serde_json::json!({
+            "index": "1",
+            "path": "/tmp/file.zip",
+            "length": "1000",
+            "completedLength": "500",
+            "selected": "true",
+            "uris": [
+                { "uri": "http://example.com/file.zip", "status": "used" }
+            ]
+        });
+        let file: Aria2File = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(file.index, "1");
+        assert_eq!(file.path, "/tmp/file.zip");
+        assert_eq!(file.uris.len(), 1);
+        assert_eq!(file.uris[0].status, "used");
+    }
 }
