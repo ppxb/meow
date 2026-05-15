@@ -169,4 +169,49 @@ mod tests {
         assert_eq!(task.seeder.as_deref(), Some("true"));
         assert_eq!(task.num_seeders.as_deref(), Some("5"));
     }
+
+    #[test]
+    fn deserialize_task_with_error_fields() {
+        let json = serde_json::json!({
+            "gid": "err001",
+            "status": "error",
+            "totalLength": "0",
+            "completedLength": "0",
+            "uploadLength": "0",
+            "downloadSpeed": "0",
+            "uploadSpeed": "0",
+            "connections": "0",
+            "dir": "/tmp",
+            "errorCode": "1",
+            "errorMessage": "unknown error"
+        });
+        let task: Aria2Task = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(task.error_code.as_deref(), Some("1"));
+        assert_eq!(task.error_message.as_deref(), Some("unknown error"));
+    }
+
+    #[test]
+    fn deserialize_task_with_followed_by() {
+        let json = serde_json::json!({
+            "gid": "meta001",
+            "status": "complete",
+            "totalLength": "100",
+            "completedLength": "100",
+            "uploadLength": "0",
+            "downloadSpeed": "0",
+            "uploadSpeed": "0",
+            "connections": "0",
+            "dir": "/tmp",
+            "followedBy": ["child001", "child002"],
+            "following": "parent001",
+            "belongsTo": "parent001"
+        });
+        let task: Aria2Task = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(
+            task.followed_by.as_deref(),
+            Some(&["child001".to_string(), "child002".to_string()][..])
+        );
+        assert_eq!(task.following.as_deref(), Some("parent001"));
+        assert_eq!(task.belongs_to.as_deref(), Some("parent001"));
+    }
 }
