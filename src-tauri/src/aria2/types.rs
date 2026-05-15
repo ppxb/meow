@@ -113,3 +113,60 @@ pub(crate) struct JsonRpcError {
     pub code: i64,
     pub message: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_minimal_task_from_aria2_json() {
+        let json = serde_json::json!({
+            "gid": "abc123",
+            "status": "active",
+            "totalLength": "1024",
+            "completedLength": "512",
+            "uploadLength": "0",
+            "downloadSpeed": "100",
+            "uploadSpeed": "0",
+            "connections": "5",
+            "dir": "/tmp"
+        });
+        let task: Aria2Task = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(task.gid, "abc123");
+        assert_eq!(task.status, "active");
+        assert_eq!(task.total_length, "1024");
+        assert_eq!(task.completed_length, "512");
+        assert!(task.files.is_empty());
+        assert!(task.bittorrent.is_none());
+        assert!(task.error_code.is_none());
+    }
+
+    #[test]
+    fn deserialize_task_with_bittorrent() {
+        let json = serde_json::json!({
+            "gid": "bt001",
+            "status": "active",
+            "totalLength": "0",
+            "completedLength": "0",
+            "uploadLength": "0",
+            "downloadSpeed": "0",
+            "uploadSpeed": "0",
+            "connections": "0",
+            "dir": "/downloads",
+            "bittorrent": {
+                "info": { "name": "test.torrent" },
+                "mode": "multi"
+            },
+            "infoHash": "abc123def456",
+            "seeder": "true",
+            "numSeeders": "5"
+        });
+        let task: Aria2Task = serde_json::from_value(json).expect("deserialize");
+        let bittorrent = task.bittorrent.as_ref().unwrap();
+        assert_eq!(bittorrent.info.as_ref().unwrap().name, "test.torrent");
+        assert_eq!(bittorrent.mode.as_deref(), Some("multi"));
+        assert_eq!(task.info_hash.as_deref(), Some("abc123def456"));
+        assert_eq!(task.seeder.as_deref(), Some("true"));
+        assert_eq!(task.num_seeders.as_deref(), Some("5"));
+    }
+}
